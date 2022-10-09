@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Data;
-using System.Linq;
-using System.IO;
-using System.Xml.Linq;
-using System.Windows.Forms;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Windows.Forms;
 using System.Xml;
 
 namespace Sheet_metal_board_reminder
@@ -102,50 +100,6 @@ namespace Sheet_metal_board_reminder
             else
             {
                 MessageBox.Show("Vybraný soubor neexistuje", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-        private void Read()
-        {
-            if(File.Exists(tbXmlFile.Text))
-            {
-                var xml = XDocument.Load(tbXmlFile.Text);
-                string[] result = xml.Descendants("Quantity")
-                    .Where(element => Convert.ToInt32(Convert.ToDecimal(element.Value.Replace('.', ','))) == 0)
-                    .Select(element => element.Parent.Parent)
-                    .Attributes()
-                    .Where(attribute => attribute.Name == "ContainerIdentNo")
-                    .Select(attribute => attribute.Value)
-                    .ToArray();
-
-                if (warningForm != null)
-                {
-                    this.Invoke((MethodInvoker)delegate
-                    {
-                        warningForm.Close();
-                    });
-                }
-
-                if (result != null && result.Length > 0)
-                {
-                    emptyContainers = Translate(result);
-
-                    string r = "";
-                    foreach (string s in emptyContainers)
-                    {
-                        r += s + "\n";
-                    }
-                    warningForm = new WarningForm(r);
-                    warningForm.StartPosition = FormStartPosition.CenterScreen;
-                    warningForm.Show();
-                }
-            }
-            else
-            {
-                timer1.Stop();
-                btnStart.Enabled = true;
-                btnStop.Enabled = false;
-                lblStatus.Text = stoppedStat;
-                MessageBox.Show("Nebyl nalezen XML soubor", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void Read2()
